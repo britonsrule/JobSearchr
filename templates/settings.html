@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search — Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0f0f0f;
+    --surface: #181818;
+    --border:  #2a2a2a;
+    --accent:  #c8a96e;
+    --accent2: #7eb8a4;
+    --text:    #e8e4dc;
+    --muted:   #888;
+    --danger:  #c0614a;
+    --mono:    'DM Mono', monospace;
+    --serif:   'DM Serif Display', serif;
+    --sans:    'Instrument Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 60px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 100;
+  }
+  .nav-brand { font-family: var(--serif); font-size: 1.25rem; color: var(--accent); }
+  .nav-links { display: flex; }
+  .nav-links a {
+    padding: 0 1.25rem; height: 60px; display: flex; align-items: center;
+    color: var(--muted); text-decoration: none; font-size: 0.8rem;
+    letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 2.5rem; }
+  .page-header { margin-bottom: 2.5rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .page-header h1 { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; }
+  .page-header p { color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem; }
+
+  /* ── RUN SEARCH BUTTON ── */
+  .run-btn {
+    background: var(--accent2); color: var(--bg); border: none;
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.75rem 1.75rem; cursor: pointer;
+    transition: opacity 0.2s; white-space: nowrap; flex-shrink: 0;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .run-btn:hover { opacity: 0.85; }
+  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .run-btn .spinner {
+    width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: var(--bg); border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: none;
+  }
+  .run-btn.running .spinner { display: block; }
+  .run-btn.running .btn-label::before { content: "Running"; }
+  .run-btn:not(.running) .btn-label::before { content: "▶  Run Search Now"; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SAVED BANNER ── */
+  .saved-banner {
+    background: color-mix(in srgb, var(--accent2) 12%, var(--surface));
+    border: 1px solid var(--accent2); color: var(--accent2);
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em;
+    padding: 0.75rem 1.25rem; margin-bottom: 1.5rem;
+    display: none;
+  }
+  .saved-banner.show { display: block; }
+
+  /* ── SEARCH LOG ── */
+  .log-wrap {
+    background: #0a0a0a; border: 1px solid var(--border);
+    margin-bottom: 2.5rem; display: none;
+  }
+  .log-wrap.open { display: block; }
+  .log-header {
+    padding: 0.6rem 1rem; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .log-header span { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .log-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 0; }
+  .log-close:hover { color: var(--text); }
+  #searchLog {
+    font-family: var(--mono); font-size: 0.78rem; line-height: 1.7;
+    color: #aaa; padding: 1rem 1.25rem;
+    max-height: 340px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  #searchLog .log-done   { color: var(--accent2); font-weight: 500; }
+  #searchLog .log-header-line { color: var(--accent); }
+  #searchLog .log-error  { color: var(--danger); }
+  #searchLog .log-result { color: #ccc; }
+
+  /* ── TWO-COLUMN LAYOUT ── */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .settings-grid.single { grid-template-columns: 1fr; }
+
+  /* ── SECTION CARD ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+  .card-title {
+    font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.35rem;
+  }
+  .card-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.1rem; line-height: 1.5; }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-group label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    font-family: var(--sans); font-size: 0.85rem; padding: 0.55rem 0.75rem;
+    outline: none; transition: border-color 0.2s; width: 100%;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { font-family: var(--mono); font-size: 0.78rem; resize: vertical; line-height: 1.7; }
+  .form-group .hint { font-size: 0.68rem; color: var(--muted); margin-top: 0.25rem; }
+
+  .sites-row { display: flex; gap: 1.25rem; }
+  .site-check { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+  .site-check input[type=checkbox] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+  .site-check span { font-size: 0.85rem; color: var(--text); }
+
+  /* ── SAVE BAR ── */
+  .save-bar {
+    position: sticky; bottom: 0; background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 1rem 0; margin-top: 2rem;
+    display: flex; gap: 0.75rem; align-items: center;
+  }
+  .btn-save {
+    background: var(--accent); color: var(--bg); border: none;
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.65rem 1.75rem; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+  .save-note { font-size: 0.75rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Job Search</span>
+  <div class="nav-links">
+    <a href="/">Applications</a>
+    <a href="/jobs">Job Listings</a>
+    <a href="/settings" class="active">Settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <h1>Settings</h1>
+      <p>Configure your search terms, scoring keywords, and run a fresh search.</p>
+    </div>
+    <button class="run-btn" id="runBtn" onclick="runSearch()">
+      <div class="spinner"></div>
+      <span class="btn-label"></span>
+    </button>
+  </div>
+
+  <!-- SAVED BANNER -->
+  <div class="saved-banner {% if request.args.get('saved') %}show{% endif %}" id="savedBanner">
+    ✓ Settings saved successfully.
+  </div>
+
+  <!-- SEARCH LOG -->
+  <div class="log-wrap" id="logWrap">
+    <div class="log-header">
+      <span>Search Log</span>
+      <button class="log-close" onclick="closeLog()">✕</button>
+    </div>
+    <div id="searchLog"></div>
+  </div>
+
+  <form method="POST" action="/settings/save">
+
+    <!-- ROW 1: General + Sites -->
+    <div class="settings-grid" style="margin-bottom:1.5rem">
+
+      <div class="card">
+        <div class="card-title">General</div>
+        <div class="card-desc">Controls that apply to every search run.</div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" name="location" value="{{ cfg.location }}">
+        </div>
+        <div class="form-group">
+          <label>Hours Old (how recent postings must be)</label>
+          <input type="number" name="hours_old" value="{{ cfg.hours_old }}" min="1" max="720">
+          <span class="hint">24 = last day, 168 = last week</span>
+        </div>
+        <div class="form-group">
+          <label>Results Per Search Term</label>
+          <input type="number" name="results_per_search" value="{{ cfg.results_per_search }}" min="10" max="200">
+        </div>
+        <div class="form-group">
+          <label>Job Sites</label>
+          <div class="sites-row">
+            <label class="site-check">
+              <input type="checkbox" name="sites" value="indeed" {% if 'indeed' in cfg.sites %}checked{% endif %}>
+              <span>Indeed</span>
+            </label>
+            <label class="site-check">
+              <input type="checkbox" name="sites" value="linkedin" {% if 'linkedin' in cfg.sites %}checked{% endif %}>
+              <span>LinkedIn</span>
+            </label>
+            <label class="site-check">
+              <input type="checkbox" name="sites" value="glassdoor" {% if 'glassdoor' in cfg.sites %}checked{% endif %}>
+              <span>Glassdoor</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Exclude Companies (one per line)</label>
+          <textarea name="exclude_companies" rows="3">{{ cfg.exclude_companies | join('\n') }}</textarea>
+          <span class="hint">Company names to filter out entirely (e.g. amazon, aws)</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Search Terms</div>
+        <div class="card-desc">Each line is a separate search query sent to the job sites. Broader terms (3–5 words) catch more results than exact phrases.</div>
+        <div class="form-group">
+          <label>Queries — one per line ({{ cfg.searches | length }} active)</label>
+          <textarea name="searches" rows="20">{{ cfg.searches | join('\n') }}</textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 2: Scoring keywords -->
+    <div class="settings-grid" style="margin-bottom:1.5rem">
+
+      <div class="card">
+        <div class="card-title">High Signal Keywords (+10 each)</div>
+        <div class="card-desc">Strong match to your background. Each match adds 10 points to the relevance score.</div>
+        <div class="form-group">
+          <textarea name="high_signal" rows="12">{{ cfg.high_signal | join('\n') }}</textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Medium Signal Keywords (+5 each)</div>
+        <div class="card-desc">Relevant but not differentiating. Each match adds 5 points.</div>
+        <div class="form-group">
+          <textarea name="med_signal" rows="12">{{ cfg.med_signal | join('\n') }}</textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="settings-grid single" style="margin-bottom: 0.5rem">
+      <div class="card">
+        <div class="card-title">Negative Signal Keywords (−15 each)</div>
+        <div class="card-desc">Roles that are likely a poor fit. Each match subtracts 15 points. Useful for filtering out roles like sales, recruiter, or individual-contributor engineering that share titles with your target roles.</div>
+        <div class="form-group">
+          <textarea name="neg_signal" rows="4">{{ cfg.neg_signal | join('\n') }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVE BAR -->
+    <div class="save-bar">
+      <button type="submit" class="btn-save">Save Settings</button>
+      <span class="save-note">Changes take effect on your next search run.</span>
+    </div>
+
+  </form>
+
+</div><!-- /page -->
+
+<script>
+// Auto-hide saved banner after 3s
+window.addEventListener('DOMContentLoaded', () => {
+  const banner = document.getElementById('savedBanner');
+  if (banner.classList.contains('show')) {
+    setTimeout(() => banner.classList.remove('show'), 3000);
+  }
+});
+
+function runSearch() {
+  const btn  = document.getElementById('runBtn');
+  const log  = document.getElementById('searchLog');
+  const wrap = document.getElementById('logWrap');
+
+  btn.classList.add('running');
+  btn.disabled = true;
+  log.innerHTML = '';
+  wrap.classList.add('open');
+
+  const es = new EventSource('/search/run');
+
+  es.onmessage = (e) => {
+    const msg = e.data;
+    if (msg === '__DONE__') {
+      es.close();
+      btn.classList.remove('running');
+      btn.disabled = false;
+      appendLog('', '');
+      appendLog('✓ Search complete — go to Job Listings to see results.', 'log-done');
+      return;
+    }
+    // Color coding
+    let cls = '';
+    if (msg.startsWith('==='))          cls = 'log-header-line';
+    else if (msg.includes('ERROR'))     cls = 'log-error';
+    else if (msg.includes('→'))         cls = 'log-result';
+    else if (msg.startsWith('Saved'))   cls = 'log-done';
+    appendLog(msg, cls);
+  };
+
+  es.onerror = () => {
+    es.close();
+    btn.classList.remove('running');
+    btn.disabled = false;
+    appendLog('Connection error — check your terminal for details.', 'log-error');
+  };
+}
+
+function appendLog(msg, cls) {
+  const log = document.getElementById('searchLog');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function closeLog() {
+  document.getElementById('logWrap').classList.remove('open');
+}
+</script>
+</body>
+</html>

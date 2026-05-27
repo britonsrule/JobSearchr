@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search — Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0f0f0f;
+    --surface:  #181818;
+    --border:   #2a2a2a;
+    --accent:   #c8a96e;
+    --accent2:  #7eb8a4;
+    --text:     #e8e4dc;
+    --muted:    #888;
+    --danger:   #c0614a;
+    --green:    #7eb8a4;
+    --mono:     'DM Mono', monospace;
+    --serif:    'DM Serif Display', serif;
+    --sans:     'Instrument Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 60px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 100;
+  }
+  .nav-brand { font-family: var(--serif); font-size: 1.25rem; color: var(--accent); letter-spacing: 0.02em; }
+  .nav-links { display: flex; gap: 0; }
+  .nav-links a {
+    padding: 0 1.25rem; height: 60px; display: flex; align-items: center;
+    color: var(--muted); text-decoration: none; font-size: 0.8rem;
+    letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2.5rem; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 2.5rem; }
+  .page-header h1 { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; color: var(--text); }
+  .page-header p { color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem; }
+
+  /* ── STATS ROW ── */
+  .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; margin-bottom: 2.5rem; background: var(--border); border: 1px solid var(--border); }
+  .stat { background: var(--surface); padding: 1.1rem 1rem; text-align: center; }
+  .stat-num { font-family: var(--mono); font-size: 1.6rem; color: var(--accent); display: block; }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-top: 0.2rem; }
+  .stat.highlight .stat-num { color: var(--accent2); }
+
+  /* ── WEEK CLAIM BOX ── */
+  .claim-box {
+    border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    padding: 1.25rem 1.5rem; margin-bottom: 2.5rem;
+  }
+  .claim-box h3 { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.75rem; }
+  .claim-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .claim-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 0.3rem 0.75rem 0.3rem 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--border); }
+  .claim-table td { padding: 0.5rem 0.75rem 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  .claim-table tr:last-child td { border-bottom: none; }
+  .claim-none { color: var(--muted); font-size: 0.82rem; font-style: italic; }
+
+  /* ── ADD FORM ── */
+  .add-form-wrap { margin-bottom: 2.5rem; }
+  .add-toggle {
+    background: none; border: 1px solid var(--accent); color: var(--accent);
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.6rem 1.2rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .add-toggle:hover { background: var(--accent); color: var(--bg); }
+  .add-form {
+    display: none; margin-top: 1rem; padding: 1.5rem;
+    border: 1px solid var(--border); background: var(--surface);
+  }
+  .add-form.open { display: block; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    font-family: var(--sans); font-size: 0.85rem; padding: 0.55rem 0.75rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group select option { background: var(--bg); }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-actions { margin-top: 1.25rem; display: flex; gap: 0.75rem; }
+  .btn-primary {
+    background: var(--accent); color: var(--bg); border: none;
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.65rem 1.5rem; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-cancel {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.65rem 1.5rem; cursor: pointer;
+  }
+  .btn-cancel:hover { border-color: var(--muted); color: var(--text); }
+
+  /* ── APPLICATIONS TABLE ── */
+  .section-label {
+    font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--muted); margin-bottom: 1rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  }
+  .apps-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  .apps-table th {
+    text-align: left; color: var(--muted); font-weight: 500;
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.5rem 1rem; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .apps-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .apps-table tr:hover td { background: var(--surface); }
+  .apps-table tr:last-child td { border-bottom: none; }
+
+  .job-title { font-weight: 600; color: var(--text); }
+  .employer { color: var(--muted); font-size: 0.78rem; margin-top: 0.15rem; }
+  .job-url a { color: var(--accent2); text-decoration: none; font-family: var(--mono); font-size: 0.72rem; }
+  .job-url a:hover { text-decoration: underline; }
+
+  .badge {
+    display: inline-block; font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.06em; padding: 0.2rem 0.55rem; border-radius: 2px;
+    white-space: nowrap;
+  }
+  .badge-Applied      { background: #1e2a3a; color: #6ea8d4; border: 1px solid #2a3d52; }
+  .badge-Phone.Screen { background: #1e2a3a; color: #6ea8d4; border: 1px solid #2a3d52; }
+  .badge-Interview    { background: #2a2a12; color: #c8a96e; border: 1px solid #3a3a1a; }
+  .badge-Offer        { background: #12251e; color: #7eb8a4; border: 1px solid #1a3a2a; }
+  .badge-Rejected     { background: #2a1212; color: #c0614a; border: 1px solid #3a1a1a; }
+  .badge-Withdrawn    { background: #1e1e1e; color: #666; border: 1px solid #333; }
+
+  .resume-pill { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+
+  .row-actions { display: flex; gap: 0.5rem; white-space: nowrap; }
+  .btn-edit, .btn-delete {
+    background: none; border: 1px solid var(--border); font-family: var(--mono);
+    font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-edit { color: var(--muted); }
+  .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-delete { color: var(--muted); }
+  .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ── EDIT MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    width: 680px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+    padding: 2rem;
+  }
+  .modal h2 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; margin-bottom: 1.5rem; }
+  .modal-actions { margin-top: 1.25rem; display: flex; gap: 0.75rem; }
+
+  /* ── EMPTY STATE ── */
+  .empty { padding: 3rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+  /* ── NOTES TOOLTIP ── */
+  .notes-text { color: var(--muted); font-size: 0.78rem; font-style: italic; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Job Search</span>
+  <div class="nav-links">
+    <a href="/" class="active">Applications</a>
+    <a href="/jobs">Job Listings</a>
+    <a href="/settings">Settings</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>Application Tracker</h1>
+    <p>Track every application. Generate your weekly unemployment claim in seconds.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">{{ apps|length }}</span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-num">{{ counts['Applied'] }}</span><span class="stat-label">Applied</span></div>
+    <div class="stat"><span class="stat-num">{{ counts['Phone Screen'] }}</span><span class="stat-label">Screens</span></div>
+    <div class="stat"><span class="stat-num">{{ counts['Interview'] }}</span><span class="stat-label">Interviews</span></div>
+    <div class="stat"><span class="stat-num">{{ counts['Offer'] }}</span><span class="stat-label">Offers</span></div>
+    <div class="stat highlight"><span class="stat-num">{{ active }}</span><span class="stat-label">Active</span></div>
+  </div>
+
+  <!-- WEEKLY CLAIM -->
+  <div class="claim-box">
+    <h3>⟶ WA Unemployment Claim — {{ week_start }} to {{ week_end }}</h3>
+    {% if week_apps %}
+    <table class="claim-table">
+      <thead><tr>
+        <th>#</th><th>Date Applied</th><th>Employer</th><th>Job Title</th><th>How Applied / URL</th><th>Resume</th>
+      </tr></thead>
+      <tbody>
+      {% for a in week_apps %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ a.date_applied }}</td>
+        <td>{{ a.employer_name }}</td>
+        <td>{{ a.job_title }}</td>
+        <td>{% if a.job_url %}<a href="{{ a.job_url }}" target="_blank">Online Application</a>{% else %}Online Application{% endif %}</td>
+        <td>{{ a.resume_used }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="claim-none">No applications logged this week ({{ week_start }} – {{ week_end }}).</p>
+    {% endif %}
+  </div>
+
+  <!-- ADD FORM -->
+  <div class="add-form-wrap">
+    <button class="add-toggle" onclick="toggleAdd()">+ Log New Application</button>
+    <div class="add-form" id="addForm">
+      <form method="POST" action="/add">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Date Applied</label>
+            <input type="date" name="date_applied" value="{{ today }}">
+          </div>
+          <div class="form-group">
+            <label>Employer Name</label>
+            <input type="text" name="employer_name" placeholder="Acme Corp" required>
+          </div>
+          <div class="form-group">
+            <label>Job Title</label>
+            <input type="text" name="job_title" placeholder="Senior Program Manager" required>
+          </div>
+          <div class="form-group full">
+            <label>Job Posting URL</label>
+            <input type="url" name="job_url" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label>Resume Used</label>
+            <input type="text" name="resume_used" value="JeremiahMarett_GoogleTPgM.docx">
+          </div>
+          <div class="form-group">
+            <label>Source</label>
+            <select name="source">
+              <option>LinkedIn</option>
+              <option>Indeed</option>
+              <option>Company Site</option>
+              <option>Referral</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+              {% for s in statuses %}<option>{{ s }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Notes</label>
+            <textarea name="notes" placeholder="Recruiter name, referral, anything worth remembering..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Save Application</button>
+          <button type="button" class="btn-cancel" onclick="toggleAdd()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLICATIONS TABLE -->
+  <div class="section-label">All Applications — {{ apps|length }} total</div>
+  {% if apps %}
+  <table class="apps-table">
+    <thead><tr>
+      <th>Date</th><th>Role</th><th>Status</th><th>Resume</th><th>Notes</th><th>URL</th><th></th>
+    </tr></thead>
+    <tbody>
+    {% for a in apps %}
+    <tr>
+      <td style="font-family:var(--mono);font-size:0.78rem;white-space:nowrap;color:var(--muted)">{{ a.date_applied }}</td>
+      <td>
+        <div class="job-title">{{ a.job_title }}</div>
+        <div class="employer">{{ a.employer_name }} &middot; {{ a.source }}</div>
+      </td>
+      <td>
+        <span class="badge badge-{{ a.status.replace(' ','.') }}">{{ a.status }}</span>
+      </td>
+      <td><span class="resume-pill">{{ a.resume_used }}</span></td>
+      <td><span class="notes-text" title="{{ a.notes }}">{{ a.notes or '—' }}</span></td>
+      <td class="job-url">
+        {% if a.job_url %}<a href="{{ a.job_url }}" target="_blank">↗ Link</a>{% else %}—{% endif %}
+      </td>
+      <td>
+        <div class="row-actions">
+          <button class="btn-edit" onclick="openEdit({{ loop.index0 }})">Edit</button>
+          <form method="POST" action="/delete/{{ loop.index0 }}" style="display:inline" onsubmit="return confirm('Remove this application?')">
+            <button type="submit" class="btn-delete">✕</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">No applications yet — click "Log New Application" to get started.</div>
+  {% endif %}
+
+</div><!-- /page -->
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h2>Edit Application</h2>
+    <form method="POST" id="editForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Date Applied</label>
+          <input type="date" name="date_applied" id="e_date">
+        </div>
+        <div class="form-group">
+          <label>Employer Name</label>
+          <input type="text" name="employer_name" id="e_employer">
+        </div>
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" name="job_title" id="e_title">
+        </div>
+        <div class="form-group full">
+          <label>Job Posting URL</label>
+          <input type="url" name="job_url" id="e_url">
+        </div>
+        <div class="form-group">
+          <label>Resume Used</label>
+          <input type="text" name="resume_used" id="e_resume">
+        </div>
+        <div class="form-group">
+          <label>Source</label>
+          <select name="source" id="e_source">
+            <option>LinkedIn</option><option>Indeed</option>
+            <option>Company Site</option><option>Referral</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status" id="e_status">
+            {% for s in statuses %}<option>{{ s }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea name="notes" id="e_notes"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">Save Changes</button>
+        <button type="button" class="btn-cancel" onclick="closeEdit()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function toggleAdd() {
+  document.getElementById('addForm').classList.toggle('open');
+}
+function openEdit(idx) {
+  fetch('/api/app/' + idx)
+    .then(r => r.json())
+    .then(a => {
+      document.getElementById('e_date').value    = a.date_applied || '';
+      document.getElementById('e_employer').value = a.employer_name || '';
+      document.getElementById('e_title').value   = a.job_title || '';
+      document.getElementById('e_url').value     = a.job_url || '';
+      document.getElementById('e_resume').value  = a.resume_used || '';
+      document.getElementById('e_notes').value   = a.notes || '';
+      setSelect('e_source', a.source);
+      setSelect('e_status', a.status);
+      document.getElementById('editForm').action = '/update/' + idx;
+      document.getElementById('editModal').classList.add('open');
+    });
+}
+function closeEdit() { document.getElementById('editModal').classList.remove('open'); }
+function setSelect(id, val) {
+  const s = document.getElementById(id);
+  for (let o of s.options) { if (o.value === val) { s.value = val; break; } }
+}
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEdit();
+});
+</script>
+</body>
+</html>

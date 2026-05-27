@@ -1,0 +1,73 @@
+{
+  "location": "Seattle, WA",
+  "hours_old": 24,
+  "results_per_search": 100,
+  "sites": [
+    "indeed",
+    "linkedin"
+  ],
+  "exclude_companies": [
+    "amazon",
+    "aws"
+  ],
+  "searches": [
+    "Technical Program Manager",
+    "Senior Program Manager technology",
+    "Staff Program Manager engineering",
+    "Strategy Operations Manager technology",
+    "Senior Manager Planning Operations tech",
+    "Business Operations Manager engineering",
+    "Portfolio Manager engineering roadmap",
+    "Product Operations Manager",
+    "Planning Operations Manager",
+    "AI Program Manager analytics",
+    "Analytics Program Manager",
+    "Data Platform Program Manager",
+    "Finance Technology Program Manager",
+    "FinOps Program Manager",
+    "Chief of Staff technology",
+    "Chief of Staff CTO engineering"
+  ],
+  "high_signal": [
+    "program manager",
+    "technical program",
+    "strategy",
+    "operations",
+    "portfolio",
+    "roadmap",
+    "cross-functional",
+    "planning",
+    "analytics",
+    "data science",
+    "ai",
+    "ml",
+    "machine learning",
+    "okr",
+    "kpi",
+    "governance",
+    "chief of staff",
+    "fintech",
+    "finance technology",
+    "data platform",
+    "stakeholder"
+  ],
+  "med_signal": [
+    "sql",
+    "python",
+    "tableau",
+    "agile",
+    "scrum",
+    "kanban",
+    "product management",
+    "engineering leadership",
+    "data analytics",
+    "executive",
+    "reporting",
+    "automation",
+    "transformation",
+    "capacity planning",
+    "org design",
+    "dependency"
+  ],
+  "neg_signal": []
+}
