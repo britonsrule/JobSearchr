@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Application specific ignore
+applications.csv
+jobs_results.csv
