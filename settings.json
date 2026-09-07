@@ -1,6 +1,6 @@
 {
   "location": "Seattle, WA",
-  "hours_old": 24,
+  "hours_old": 74,
   "results_per_search": 100,
   "sites": [
     "indeed",
@@ -10,46 +10,51 @@
     "amazon",
     "aws"
   ],
-  "searches": [
-    "Technical Program Manager",
-    "Senior Program Manager technology",
-    "Staff Program Manager engineering",
-    "Strategy Operations Manager technology",
-    "Senior Manager Planning Operations tech",
-    "Business Operations Manager engineering",
-    "Portfolio Manager engineering roadmap",
-    "Product Operations Manager",
-    "Planning Operations Manager",
-    "AI Program Manager analytics",
-    "Analytics Program Manager",
-    "Data Platform Program Manager",
-    "Finance Technology Program Manager",
-    "FinOps Program Manager",
-    "Chief of Staff technology",
-    "Chief of Staff CTO engineering"
-  ],
+  "searches": {
+    "Technical Program Manager": [
+      "Technical Program Manager",
+      "Senior Program Manager",
+      "Staff Program Manager",
+      "AI Program Manager analytics",
+      "Analytics Program Manager",
+      "Data Platform Program Manager"
+    ],
+    "Business Operations": [
+      "Strategy Operations Manager technology",
+      "Business Operations Manager",
+      "Data Operations Manager"
+    ],
+    "Planning": [
+      "Senior Manager Planning Operations",
+      "Planning Operations Manager",
+      "Portfolio Manager roadmap"
+    ],
+    "Product Operations": [
+      "Product Operations Manager"
+    ],
+    "Chief of Staff": [
+      "Chief of Staff technology",
+      "Chief of Staff CTO engineering"
+    ],
+    "Analytics Manager": [
+      "Analytics Manager",
+      "Business Intelligence Manager"
+    ]
+  },
   "high_signal": [
     "program manager",
     "technical program",
     "strategy",
     "operations",
-    "portfolio",
     "roadmap",
     "cross-functional",
     "planning",
-    "analytics",
-    "data science",
-    "ai",
-    "ml",
     "machine learning",
     "okr",
     "kpi",
     "governance",
     "chief of staff",
-    "fintech",
-    "finance technology",
-    "data platform",
-    "stakeholder"
+    "operational excellence"
   ],
   "med_signal": [
     "sql",
@@ -59,15 +64,20 @@
     "scrum",
     "kanban",
     "product management",
-    "engineering leadership",
-    "data analytics",
+    "analytics",
     "executive",
     "reporting",
     "automation",
     "transformation",
     "capacity planning",
     "org design",
-    "dependency"
+    "dependency",
+    "incident management",
+    "monitoring",
+    "reliability"
   ],
-  "neg_signal": []
+  "neg_signal": [
+    "marketing",
+    "hr"
+  ]
 }
