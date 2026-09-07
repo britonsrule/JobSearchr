@@ -12,33 +12,62 @@
   ],
   "searches": {
     "Technical Program Manager": [
-      "Technical Program Manager",
-      "Senior Program Manager",
-      "Staff Program Manager",
-      "AI Program Manager analytics",
-      "Analytics Program Manager",
-      "Data Platform Program Manager"
+      "technical program manager",
+      "TPM",
+      "senior program manager",
+      "program manager",
+      "principal program manager",
+      "program management",
+      "cross-functional programs",
+      "delivery lead"
     ],
     "Business Operations": [
-      "Strategy Operations Manager technology",
-      "Business Operations Manager",
-      "Data Operations Manager"
+      "business operations",
+      "strategy and operations",
+      "biz ops",
+      "operations manager",
+      "operational excellence",
+      "business operations manager",
+      "revenue operations",
+      "GTM operations"
     ],
-    "Planning": [
-      "Senior Manager Planning Operations",
-      "Planning Operations Manager",
-      "Portfolio Manager roadmap"
+    "Strategic Planning": [
+      "strategic planning",
+      "annual operating plan",
+      "operating plan",
+      "planning and performance",
+      "business planning",
+      "strategic planning manager",
+      "operating cadence",
+      "rhythm of business"
     ],
-    "Product Operations": [
-      "Product Operations Manager"
+    "Data Science Manager": [
+      "data science manager",
+      "data science lead",
+      "machine learning manager",
+      "ML manager",
+      "applied science manager",
+      "head of data science",
+      "data science team lead"
     ],
     "Chief of Staff": [
-      "Chief of Staff technology",
-      "Chief of Staff CTO engineering"
+      "chief of staff",
+      "business chief of staff",
+      "strategy and operations",
+      "special projects",
+      "business operations lead",
+      "executive operations",
+      "strategic initiatives"
     ],
     "Analytics Manager": [
-      "Analytics Manager",
-      "Business Intelligence Manager"
+      "analytics manager",
+      "data analytics manager",
+      "business intelligence manager",
+      "insights manager",
+      "analytics lead",
+      "reporting and analytics",
+      "BI manager",
+      "data analytics"
     ]
   },
   "high_signal": [
